@@ -14,8 +14,16 @@ enums(schema, type)
 types(schema, type)
 }
 \arguments{
-\item{type}{}
+\item{schema}{imported json schema}
+
+\item{type}{schema reference}
 }
 \description{
 schema utility functions
+}
+\examples{
+
+schema_file <- Sys.glob(file.path(system.file("schema/vega-lite", package = "vegawidget"),"*.json"))
+VL_SCHEMA <- jsonlite::read_json(schema_file)
+encoding_options <- props(VL_SCHEMA, list("$ref" = "#/definitions/Encoding"))
 }

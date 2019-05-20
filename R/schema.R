@@ -26,8 +26,8 @@ search <- function(schema, type, check, get, gather, base) {
 
 #' schema utility functions
 #'
-#' @param schema
-#' @param type
+#' @param schema imported json schema
+#' @param type schema reference
 #'
 #' @return
 #' @export
@@ -35,6 +35,10 @@ search <- function(schema, type, check, get, gather, base) {
 #' @name schema
 #'
 #' @examples
+#' 
+#' schema_file <- Sys.glob(file.path(system.file("schema/vega-lite", package = "vegawidget"),"*.json"))
+#' VL_SCHEMA <- jsonlite::read_json(schema_file)
+#' encoding_options <- props(VL_SCHEMA, list("$ref" = "#/definitions/Encoding"))
 props <- function(schema, type) {
   search(schema,
          type,
