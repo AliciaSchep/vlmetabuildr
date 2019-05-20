@@ -28,7 +28,10 @@ create_mark_generic <- function(schema){
        "#' @export\n",
        "#' @name vl_mark\n",
        "vl_mark <- function({arg_list}) {{\n",
-       "  pass_call(quote(.add_mark))\n",
+       "  args_in <- rlang::fn_fmls_syms()\n",
+       "  args_eval <- lapply(args_in,eval, env = rlang::current_env())\n",
+       "  args_out <- args_eval[!vapply(args_eval,is.null,FALSE)]\n",
+       "  rlang::exec(.add_mark, !!!args_out)\n",
        "}}\n", .trim = FALSE)
 
 }
@@ -46,6 +49,10 @@ create_mark <- function(mark, schema) {
   glue("\n#' @name vl_mark\n",
        "#' @export\n",
        "vl_mark_{mark} <- function({arg_list}) {{\n",
-       "  pass_call(quote(.add_mark), add = list(.mark = '{mark}'))\n",
+       "  args_in <- rlang::fn_fmls_syms()\n",
+       "  args_eval <- lapply(args_in,eval, env = rlang::current_env())\n",
+       "  args_out <- args_eval[!vapply(args_eval,is.null,FALSE)]\n",
+       "  args_out <- c(args_out, list(.mark = '{mark}'))\n",
+       "  rlang::exec(.add_mark, !!!args_out)\n",
        "}}\n", .trim = FALSE)
 }

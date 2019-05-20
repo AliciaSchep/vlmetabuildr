@@ -23,7 +23,10 @@ create_data_generic <- function(schema){
        "#' @export\n",
        "#' @name add_data\n",
        "vl_add_data <- function({arg_list}) {{\n",
-       "  pass_call(quote(.add_data))\n",
+       "  args_in <- rlang::fn_fmls_syms()\n",
+       "  args_eval <- lapply(args_in,eval, env = rlang::current_env())\n",
+       "  args_out <- args_eval[!vapply(args_eval,is.null,FALSE)]\n",
+       "  rlang::exec(.add_data, !!!args_out)\n",
        "}}\n", .trim = FALSE)
 
 }

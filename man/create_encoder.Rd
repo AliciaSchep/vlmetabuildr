@@ -2,9 +2,12 @@
 % Please edit documentation in R/encoding.R
 \name{create_encoder}
 \alias{create_encoder}
+\alias{create_encode_object}
 \title{create_encoder}
 \usage{
 create_encoder(enc, schema)
+
+create_encode_object(enc, schema)
 }
 \arguments{
 \item{schema}{}
