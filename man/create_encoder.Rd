@@ -10,7 +10,9 @@ create_encoder(enc, schema)
 create_encode_object(enc, schema)
 }
 \arguments{
-\item{schema}{}
+\item{enc}{name of encoding, e.g 'x'}
+
+\item{schema}{imported json schema}
 }
 \description{
 create_encoder

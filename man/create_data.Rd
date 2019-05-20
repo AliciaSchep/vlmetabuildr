@@ -8,7 +8,7 @@
 create_data_generic(schema)
 }
 \arguments{
-\item{schema}{}
+\item{schema}{imported json schema}
 }
 \description{
 create_data

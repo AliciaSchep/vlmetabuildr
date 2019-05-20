@@ -5,7 +5,7 @@ get_mark_props <- function(schema){
 
 #' create_mark
 #'
-#' @param schema
+#' @param schema imported json schema
 #'
 #' @return
 #' @export
@@ -37,7 +37,7 @@ create_mark_generic <- function(schema){
 }
 
 
-#' @param mark
+#' @param mark name of the mark
 #' @name create_mark
 #' @export
 create_mark <- function(mark, schema) {

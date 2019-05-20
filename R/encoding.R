@@ -2,8 +2,8 @@
 
 #' create_encoder
 #'
-#' @param enc
-#' @param schema
+#' @param enc name of encoding, e.g 'x'
+#' @param schema imported json schema
 #'
 #' @return
 #' @export

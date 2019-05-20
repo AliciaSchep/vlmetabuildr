@@ -10,7 +10,9 @@ create_mark_generic(schema)
 create_mark(mark, schema)
 }
 \arguments{
-\item{schema}{}
+\item{schema}{imported json schema}
+
+\item{mark}{name of the mark}
 }
 \description{
 create_mark

@@ -1,6 +1,6 @@
 #' create_data
 #'
-#' @param schema
+#' @param schema imported json schema
 #'
 #' @return
 #' @export
@@ -9,7 +9,7 @@
 #' @examples
 create_data_generic <- function(schema){
 
-  data_props <- props(VL_SCHEMA, list("$ref" = "#/definitions/Data"))
+  data_props <- props(schema, list("$ref" = "#/definitions/Data"))
   data_args <- paste(names(data_props), "NULL", sep = " = ")
   arg_list <- paste(c('spec', unique(data_args)), collapse = ", ")
 
