@@ -5,6 +5,7 @@
 \alias{props}
 \alias{enums}
 \alias{types}
+\alias{get_name_from_ref}
 \title{schema}
 \usage{
 props(schema, type)
@@ -12,6 +13,8 @@ props(schema, type)
 enums(schema, type)
 
 types(schema, type)
+
+get_name_from_ref(type)
 }
 \arguments{
 \item{schema}{imported json schema}

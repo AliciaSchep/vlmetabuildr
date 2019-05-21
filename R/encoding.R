@@ -44,16 +44,15 @@ create_encode_object <- function(enc, schema) {
   arg_list <- paste(unique(encode_args), collapse = ", ")
 
   param_docs <- get_param_docs(encode_props)
-
-  glue("\n#' vl_{enc}\n#' \n",
-       "#' Add encoding for {enc} to a vega-lite spec.\n",
-       "#' @param spec A vega-lite spec\n",
+  Enc <- capitalize(enc)
+  glue("\n#' vl_{Enc}\n#' \n",
+       "#' Create spec for {enc} encoding.\n",
        "{param_docs}\n",
        "#' @return A modified spec\n",
        "#' @export\n",
        "#' @md\n",
        "#' @seealso [vl_encode_{enc}()]\n",
-       "vl_{enc} <- function({arg_list}) {{\n",
+       "vl_{Enc} <- function({arg_list}) {{\n",
        "  args_in <- rlang::fn_fmls_syms()\n",
        "  args_eval <- lapply(args_in,eval, env = rlang::current_env())\n",
        "  args_out <- args_eval[!vapply(args_eval,is.null,FALSE)]\n",

@@ -76,3 +76,9 @@ types <- function(schema, type) {
          function() {c()}
   )
 }
+
+#' @name schema
+#' @export
+get_name_from_ref <- function(type){
+  stringr::str_remove(type[["$ref"]],"#/definitions/")
+}
