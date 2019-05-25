@@ -18,19 +18,10 @@ create_encoder <- function(enc, schema) {
 
   param_docs <- get_param_docs(encode_props)
 
-  glue("\n#' vl_encode_{enc}\n#' \n",
-       "#' Add encoding for {enc} to a vega-lite spec.\n",
-       "#' @param spec A vega-lite spec\n",
-       "{param_docs}\n",
-       "#' @return A modified spec\n",
-       "#' @export\n",
-       "vl_encode_{enc} <- function({arg_list}) {{\n",
-       "  args_in <- rlang::fn_fmls_syms()\n",
-       "  args_eval <- lapply(args_in,eval, env = rlang::current_env())\n",
-       "  args_out <- args_eval[!vapply(args_eval,is.null,FALSE)]\n",
-       "  args_out <- c(args_out, list(.enc = '{enc}'))\n",
-       "  rlang::exec(.add_encoding, !!!args_out)\n",
-       "}}\n", .trim = FALSE)
+  template <- system.file("templates/template_encode.R", package = 'vlmetabuildr')
+  glargs <- list(enc = enc, arg_list = arg_list,
+                 param_docs = param_docs)
+  glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
 
 }
 
@@ -45,18 +36,86 @@ create_encode_object <- function(enc, schema) {
 
   param_docs <- get_param_docs(encode_props)
   Enc <- capitalize(enc)
-  glue("\n#' vl_{Enc}\n#' \n",
-       "#' Create spec for {enc} encoding.\n",
-       "{param_docs}\n",
-       "#' @return A modified spec\n",
-       "#' @export\n",
-       "#' @md\n",
-       "#' @seealso [vl_encode_{enc}()]\n",
-       "vl_{Enc} <- function({arg_list}) {{\n",
-       "  args_in <- rlang::fn_fmls_syms()\n",
-       "  args_eval <- lapply(args_in,eval, env = rlang::current_env())\n",
-       "  args_out <- args_eval[!vapply(args_eval,is.null,FALSE)]\n",
-       "  args_out\n",
-       "}}\n", .trim = FALSE)
+  
+  template <- system.file("templates/template_object.R", package = 'vlmetabuildr')
+  glargs <- list(obj = Enc, arg_list = arg_list,
+                 param_docs = param_docs)
+  glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
 
+}
+
+#' @export
+create_sort_for_encoding <- function(enc, schema){
+  
+  arg_list <- "spec, value"
+  
+  template <- system.file("templates/template_sort.R", package = 'vlmetabuildr')
+  glargs <- list(enc = enc, arg_list = arg_list)
+  glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
+  
+}
+
+
+#' @export
+create_sort_by_field_for_encoding <- function(enc, schema){
+  
+  sort_props <- props(schema, list("$ref" = "#/definitions/EncodingSortField"))
+  sort_args <- paste(names(sort_props), "NULL", sep = " = ")
+  arg_list <- paste(c('spec', unique(sort_args)), collapse = ", ")
+  
+  param_docs <- get_param_docs(sort_props)
+  
+  template <- system.file("templates/template_sort_by_field.R", package = 'vlmetabuildr')
+  glargs <- list(enc = enc, arg_list = arg_list,
+                 param_docs = param_docs)
+  glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
+  
+}
+
+#' @export
+create_sort_by_encoding_for_encoding <- function(enc, schema){
+  
+  sort_props <- props(schema, list("$ref" = "#/definitions/SortByEncoding"))
+  sort_args <- paste(names(sort_props), "NULL", sep = " = ")
+  arg_list <- paste(c('spec', unique(sort_args)), collapse = ", ")
+  
+  param_docs <- get_param_docs(sort_props)
+  
+  template <- system.file("templates/template_sort_by_encoding.R", package = 'vlmetabuildr')
+  glargs <- list(enc = enc, arg_list = arg_list,
+                 param_docs = param_docs)
+  glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
+  
+}
+
+#' @export
+create_axis_for_encoding <- function(enc, schema){
+  
+  axis_props <- props(schema, list("$ref" = "#/definitions/Axis"))
+  axis_args <- paste(names(axis_props), "NULL", sep = " = ")
+  arg_list <- paste(c('spec', unique(axis_args), "remove = FALSE"), collapse = ", ")
+  
+  param_docs <- get_param_docs(axis_props)
+  
+  template <- system.file("templates/template_axis.R", package = 'vlmetabuildr')
+  glargs <- list(enc = enc, arg_list = arg_list,
+                 param_docs = param_docs)
+  glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
+  
+}
+
+#' @export
+create_scale_for_encoding <- function(enc, schema) {
+  
+  scale_props <- props(schema, list("$ref" = "#/definitions/Scale"))
+  scale_args <- paste(names(scale_props), "NULL", sep = " = ")
+  arg_list <- paste(c('spec', unique(scale_args)), collapse = ", ")
+  
+  param_docs <- get_param_docs(scale_props)
+  
+  template <- system.file("templates/template_scale.R", package = 'vlmetabuildr')
+  glargs <- list(enc = enc, arg_list = arg_list,
+                 param_docs = param_docs)
+  glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
+  
 }
