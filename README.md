@@ -34,16 +34,17 @@ vl_and
 vl_or
 vl_not
 
-
-vl_add_projection
-vl_add_title
-
 vl_facet_row
 vl_facet_col
 vl_facet_wrap
 vl_resolve_scale
 vl_resolve_axis
 vl_resolve_legend
+
+vl_add_projection
+vl_add_title
+
+
 
 # customize order -- encode: field first, selection type first
 # encode - sugar for type

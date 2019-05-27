@@ -21,6 +21,9 @@ get_name_from_ref(type)
 
 \item{type}{schema reference}
 }
+\value{
+list
+}
 \description{
 schema utility functions
 }

@@ -5,13 +5,6 @@ get_mark_props <- function(schema){
 
 #' create_mark
 #'
-#' @param schema imported json schema
-#'
-#' @return
-#' @export
-#' @name create_mark
-#'
-#' @examples
 create_mark_generic <- function(schema){
 
   mark_props <- get_mark_props(schema)
@@ -37,9 +30,6 @@ create_mark_generic <- function(schema){
 }
 
 
-#' @param mark name of the mark
-#' @name create_mark
-#' @export
 create_mark <- function(mark, schema) {
 
   mark_props <- get_mark_props(schema)
@@ -55,4 +45,12 @@ create_mark <- function(mark, schema) {
        "  args_out <- c(args_out, list(.mark = '{mark}'))\n",
        "  rlang::exec(.add_mark, !!!args_out)\n",
        "}}\n", .trim = FALSE)
+}
+
+create_mark_functions <- function(schema){
+  mark_options = enums(VL_SCHEMA, list("$ref" = '#/definitions/AnyMark'));
+  c(
+    create_mark_generic(VL_SCHEMA),
+    purrr::map_chr(mark_options, create_mark, schema = VL_SCHEMA)
+  )
 }

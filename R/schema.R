@@ -10,7 +10,7 @@ lookup <- function(schema, ref = NULL){
 search <- function(schema, type, check, get, gather, base) {
   if (is.null(type)) {
     base()
-  } else if (!is.null(type[["$ref"]])) {
+  } else if (hasName(type,"$ref")) {
     search(schema, lookup(schema, type[["$ref"]]), check, get, gather, base)
   } else if (check(type)) {
     get(type)
@@ -29,7 +29,7 @@ search <- function(schema, type, check, get, gather, base) {
 #' @param schema imported json schema
 #' @param type schema reference
 #'
-#' @return
+#' @return list
 #' @export
 #' @title schema
 #' @name schema

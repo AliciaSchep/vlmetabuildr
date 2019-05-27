@@ -1,5 +1,4 @@
-#' @export
-#' @name create_object
+
 create_object <- function(obj, schema) {
   
   # Get all props...

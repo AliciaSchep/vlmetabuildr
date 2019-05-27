@@ -46,16 +46,68 @@ get_param_docs <- function(properties) {
 
 create_pass_function <- function(function_suffix, 
                                  recipient_function,
+                                 arg_list,
                                  modify_args = "",
                                  doc_description = "",
-                                 see_also = ""
+                                 extra_docs = "",
                                  param_docs = "" ) {
 
-  template <- system.file(file.path("templates",template), 
+  template <- system.file(file.path("templates","template_pass.R"), 
                           package = 'vlmetabuildr')
-  glargs <- list(enc = enc, arg_list = arg_list,
-                 param_docs = param_docs)
+  glargs <- list(
+    function_suffix = function_suffix,
+    recipient_function = recipient_function,
+    arg_list = arg_list,
+    modify_args = modify_args,
+    doc_description = doc_description,
+    extra_docs = extra_docs,
+    param_docs = param_docs
+  )
+  
   glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
   
 }
+
+create_custom_pass_function <- function(function_suffix, 
+                                 recipient_function,
+                                 arg_list,
+                                 modify_args,
+                                 doc_description = "",
+                                 extra_docs = "",
+                                 param_docs = "" ) {
+  
+  template <- system.file(file.path("templates","template_pass_custom.R"), 
+                          package = 'vlmetabuildr')
+  glargs <- list(
+    function_suffix = function_suffix,
+    recipient_function = recipient_function,
+    arg_list = arg_list,
+    modify_args = modify_args,
+    doc_description = doc_description,
+    extra_docs = extra_docs,
+    param_docs = param_docs
+  )
+  
+  glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
+  
+}
+
+create_function_for_encode_param <- function(
+  enc,
+  param,
+  arg_list,
+  param_docs ) {
+
+  create_pass_function(
+    function_suffix = glue("{param}_{enc}"), 
+    recipient_function = glue(".add_{param}_to_encoding"),
+    arg_list = arg_list,
+    modify_args = glue("args_out <- c(args_out, list(.enc = '{enc}'))"),
+    doc_description = glue("#' Add {param} to encoding for {enc} in a vega-lite spec."),
+    extra_docs = glue("#' @seealso [vl_{enc}()]"),
+    param_docs = param_docs
+  )
+
+}
+
 
