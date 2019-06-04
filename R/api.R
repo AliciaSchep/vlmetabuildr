@@ -27,7 +27,8 @@ create_api <- function(schema){
     create_binding_functions(schema),
     create_facet_functions(schema),
     create_repeat_functions(schema),
-    create_resolve_functions(schema)
+    create_resolve_functions(schema),
+    create_config_functions(schema)
   )
   
 }

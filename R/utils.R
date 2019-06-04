@@ -39,6 +39,10 @@ get_param_docs <- function(properties) {
     param_names,
     ~ paste(unique(docs[which(names(properties) == .)]), collapse = " OR ")
   )
+  
+  param_desc <- stringr::str_replace_all(
+    param_desc,
+    "_\\[(.*)\\]_","\\\\\\[\\1\\\\\\]")
 
   paste("#' @param", param_names, param_desc, sep = " ", collapse = "\n")
 

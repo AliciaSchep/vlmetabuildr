@@ -12,7 +12,7 @@ create_row_facet <- function(schema) {
     recipient_function = ".add_facet_row",
     arg_list = arg_list,
     doc_description = glue("#' Add faceting by row to a vega-lite spec."),
-    extra_docs = glue("#' @seealso [vl_facet_col()], [vl_facet_wrap()]"),
+    extra_docs = glue("#' @seealso [vl_facet_column()], [vl_facet_wrap()]"),
     param_docs = param_docs)   
   
 }
@@ -27,8 +27,8 @@ create_col_facet <- function(schema) {
   param_docs <- get_param_docs(facet_props)
   
   create_pass_function(
-    function_suffix = "facet_col", 
-    recipient_function = ".add_facet_col",
+    function_suffix = "facet_column", 
+    recipient_function = ".add_facet_column",
     arg_list = arg_list,
     doc_description = glue("#' Add faceting by column to a vega-lite spec."),
     extra_docs = glue("#' @seealso [vl_facet_row()], [vl_facet_wrap()]"),
