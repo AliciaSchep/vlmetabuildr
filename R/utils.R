@@ -42,7 +42,14 @@ get_param_docs <- function(properties) {
   
   param_desc <- stringr::str_replace_all(
     param_desc,
-    "_\\[(.*)\\]_","\\\\\\[\\1\\\\\\]")
+    "_\\[([^[\\]_]]*)\\]_",
+    "\\\\\\[\\1\\\\\\]")
+  
+  param_desc <- stringr::str_replace_all(
+    param_desc,
+    "%E2%80%93",
+    "-"
+  )
 
   paste("#' @param", param_names, param_desc, sep = " ", collapse = "\n")
 
