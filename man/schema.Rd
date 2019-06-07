@@ -3,12 +3,18 @@
 \name{schema}
 \alias{schema}
 \alias{props}
+\alias{props2}
+\alias{reqs}
 \alias{enums}
 \alias{types}
 \alias{get_name_from_ref}
 \title{schema}
 \usage{
 props(schema, type)
+
+props2(schema, type)
+
+reqs(schema, type)
 
 enums(schema, type)
 

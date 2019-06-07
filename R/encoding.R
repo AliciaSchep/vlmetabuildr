@@ -16,10 +16,11 @@ create_encoder <- function(enc, schema) {
 
   # Get all props...
   encode_props <- props(schema, list("$ref" = glue("#/definitions/Encoding/properties/{enc}")))
-  encode_args <- paste(names(encode_props), "NULL", sep = " = ")
-  arg_list <- paste(c('spec', unique(encode_args)), collapse = ", ")
+  encode_names <- unique(c("field", "type", names(encode_props)))
+  encode_args <- paste(encode_names, "NULL", sep = " = ")
+  arg_list <- paste(c('spec', encode_args), collapse = ", ")
 
-  param_docs <- get_param_docs(encode_props)
+  param_docs <- get_param_docs2(schema, list("$ref" = glue("#/definitions/Encoding/properties/{enc}")))
 
   create_pass_function(
     function_suffix = glue("encode_{enc}"), 
@@ -40,7 +41,7 @@ create_encode_object <- function(enc, schema) {
   encode_args <- paste(names(encode_props), "NULL", sep = " = ")
   arg_list <- paste(unique(encode_args), collapse = ", ")
 
-  param_docs <- get_param_docs(encode_props)
+  param_docs <- get_param_docs2(schema, list("$ref" = glue("#/definitions/Encoding/properties/{enc}")))
   Enc <- capitalize(enc)
   
   template <- system.file("templates/template_object.R", package = 'vlmetabuildr')

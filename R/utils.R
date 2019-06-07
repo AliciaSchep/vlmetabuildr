@@ -21,8 +21,18 @@ get_description <- function(x) {
   } else if (hasName(x, "enum")) {
     paste(purrr::pluck(x,"enum"), collapse = ", ")
   } else {
-    ""
+    " "
   }
+}
+
+get_description_plus <- function(x) {
+
+  d <- get_description(x)
+  d <- stringr::str_replace_all(d, "\n","\n#' ")
+  #t <- type_or_ref(x)
+  #glue("{d} (type = {t})")
+  d
+
 }
 
 get_param_docs <- function(properties) {
@@ -53,6 +63,43 @@ get_param_docs <- function(properties) {
 
   paste("#' @param", param_names, param_desc, sep = " ", collapse = "\n")
 
+}
+
+
+
+get_param_docs2 <- function(schema, ref) {
+  
+  properties <- props2(schema, list("$ref" = ref))
+  
+  param_names <- unique(names(unlist(unname(properties), recursive = FALSE)))
+  
+  get_desc <- function(param) {
+    objs <- names(properties[purrr::map_lgl(properties, ~hasName(., param))])
+    d <- purrr::map_chr(objs, ~get_description_plus(properties[[.]][[param]]))
+    grps <- split(objs, d)
+    grp_descs <- purrr::map_chr(names(grps), 
+                   ~glue('(_{paste(grps[[.]], collapse = ", ")}_) {.}'))
+    if (length(grp_descs) > 1) {
+      return(paste(grp_descs, collapse = "#' "))
+    }
+    grp_descs
+  }
+  
+  param_desc <- purrr::map_chr(param_names, get_desc)
+  
+  param_desc <- stringr::str_replace_all(
+    param_desc,
+    "_\\[([^[\\]_]]*)\\]_",
+    "\\\\\\[\\1\\\\\\]")
+  
+  param_desc <- stringr::str_replace_all(
+    param_desc,
+    "%E2%80%93",
+    "-"
+  )
+  
+  paste("#' @param", param_names, param_desc, sep = " ", collapse = "\n")
+  
 }
 
 create_pass_function <- function(function_suffix, 
