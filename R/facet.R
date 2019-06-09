@@ -1,11 +1,11 @@
 create_row_facet <- function(schema) {
   
   # Get all props...
-  facet_props <- props(schema, list("$ref" = glue("#/definitions/FacetFieldDef")))
+  facet_props <- props(schema, list("$ref" = "#/definitions/FacetFieldDef"))
   facet_args <- paste(names(facet_props), "NULL", sep = " = ")
   arg_list <- paste(c('spec', unique(facet_args)), collapse = ", ")
   
-  param_docs <- get_param_docs(facet_props)
+  param_docs <- get_param_docs(schema, "#/definitions/FacetFieldDef")
   
   create_pass_function(
     function_suffix = "facet_row", 
@@ -20,11 +20,11 @@ create_row_facet <- function(schema) {
 create_col_facet <- function(schema) {
   
   # Get all props...
-  facet_props <- props(schema, list("$ref" = glue("#/definitions/FacetFieldDef")))
+  facet_props <- props(schema, list("$ref" = "#/definitions/FacetFieldDef"))
   facet_args <- paste(names(facet_props), "NULL", sep = " = ")
   arg_list <- paste(c('spec', unique(facet_args)), collapse = ", ")
   
-  param_docs <- get_param_docs(facet_props)
+  param_docs <- get_param_docs(schema, "#/definitions/FacetFieldDef")
   
   create_pass_function(
     function_suffix = "facet_column", 
@@ -39,12 +39,12 @@ create_col_facet <- function(schema) {
 create_wrap_facet <- function(schema) {
   
   # Get all props...
-  facet_props <- props(schema, list("$ref" = glue("#/definitions/FacetFieldDef")))
+  facet_props <- props(schema, list("$ref" = "#/definitions/FacetFieldDef"))
   facet_args <- paste(names(facet_props), "NULL", sep = " = ")
   arg_list <- paste(c('spec', 'columns = 2', unique(facet_args)), collapse = ", ")
   
   param_docs <- paste0(
-    get_param_docs(facet_props),
+    get_param_docs(schema, "#/definitions/FacetFieldDef"),
     "\n#' @param columns number of columns to add"
     )
   

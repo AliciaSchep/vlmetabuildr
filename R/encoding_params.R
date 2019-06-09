@@ -59,7 +59,7 @@ create_bin_for_encoding <- function(enc, schema){
   bin_args <- paste(names(bin_props), "NULL", sep = " = ")
   arg_list <- paste(c('spec', unique(bin_args)), collapse = ", ")
   
-  param_docs <- get_param_docs(bin_props)
+  param_docs <- get_param_docs(schema, "#/definitions/BinParams")
   
   create_function_for_encode_param(
     enc,
@@ -76,7 +76,7 @@ create_impute_for_encoding <- function(enc, schema){
   impute_args <- paste(names(impute_props), "NULL", sep = " = ")
   arg_list <- paste(c('spec', unique(impute_args)), collapse = ", ")
   
-  param_docs <- get_param_docs(impute_props)
+  param_docs <- get_param_docs(schema, "#/definitions/ImputeParams")
   
   create_function_for_encode_param(
     enc,
@@ -175,7 +175,7 @@ create_sort_by_field_for_encoding <- function(enc, schema){
   sort_args <- paste(names(sort_props), "NULL", sep = " = ")
   arg_list <- paste(c('spec', unique(sort_args)), collapse = ", ")
   
-  param_docs <- get_param_docs(sort_props)
+  param_docs <- get_param_docs(schema, "#/definitions/EncodingSortField")
   
   create_pass_function(
     function_suffix = glue("sort_{enc}_by_field"), 
@@ -197,7 +197,7 @@ create_sort_by_encoding_for_encoding <- function(enc, schema){
   sort_args <- paste(names(sort_props), "NULL", sep = " = ")
   arg_list <- paste(c('spec', unique(sort_args)), collapse = ", ")
   
-  param_docs <- get_param_docs(sort_props)
+  param_docs <- get_param_docs(schema, "#/definitions/SortByEncoding")
   
   create_pass_function(
     function_suffix = glue("sort_{enc}_by_encoding"), 
@@ -219,7 +219,7 @@ create_axis_for_encoding <- function(enc, schema) {
   axis_args <- paste(names(axis_props), "NULL", sep = " = ")
   arg_list <- paste(c('spec', unique(axis_args), "remove = FALSE"), collapse = ", ")
   
-  param_docs <- paste0(get_param_docs(axis_props),
+  param_docs <- paste0(get_param_docs(schema, "#/definitions/Axis"),
                        "\n#' @param remove Remove the axis?")
   
   create_function_for_encode_param(
@@ -238,7 +238,7 @@ create_scale_for_encoding <- function(enc, schema) {
   scale_args <- paste(names(scale_props), "NULL", sep = " = ")
   arg_list <- paste(c('spec', unique(scale_args)), collapse = ", ")
   
-  param_docs <- get_param_docs(scale_props)
+  param_docs <- get_param_docs(schema, "#/definitions/Scale")
   
   create_function_for_encode_param(
     enc,
@@ -256,7 +256,7 @@ create_legend_for_encoding <- function(enc, schema) {
   legend_args <- paste(names(legend_props), "NULL", sep = " = ")
   arg_list <- paste(c('spec', unique(legend_args)), collapse = ", ")
   
-  param_docs <- get_param_docs(legend_props)
+  param_docs <- get_param_docs(schema, "#/definitions/Legend")
   
   create_function_for_encode_param(
     enc,
@@ -277,7 +277,10 @@ create_condition_for_encoding <- function(enc, schema) {
   condition_args <- paste(names(condition_props), "NULL", sep = " = ")
   arg_list <- paste(c('spec', unique(condition_args)), collapse = ", ")
   
-  param_docs <- get_param_docs(condition_props)
+  param_docs <- get_param_docs(
+    schema, 
+    c("#/definitions/ConditionalValueDef","#/definitions/ConditionalMarkPropFieldDef")
+  )
   
   create_function_for_encode_param(
     enc,

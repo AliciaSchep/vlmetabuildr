@@ -15,7 +15,7 @@ create_transform <- function(trans, schema) {
   transform_args <- paste(names(transform_props), "NULL", sep = " = ")
   arg_list <- paste(c('spec', unique(transform_args)), collapse = ", ")
   
-  param_docs <- get_param_docs(transform_props)
+  param_docs <- get_param_docs(schema, glue("#/definitions/{trans}"))
   
   short_trans <- tolower(stringr::str_remove(trans,"Transform"))
   create_pass_function(

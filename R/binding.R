@@ -9,7 +9,7 @@ create_binding <- function(schema, name, ref) {
   param_docs <- paste0(
     "#' @param selection_name Name of selection to add binding to\n",
     "#' @param projection_name Name of projection (field or encoding) within selection\n",
-    get_param_docs(bind_props)
+    get_param_docs(schema, glue("#/definitions/{ref}"), only = names(bind_props))
   )
   
   create_pass_function(
@@ -23,36 +23,17 @@ create_binding <- function(schema, name, ref) {
 }
 
 
-create_radio_binding <- function(schema) {
-  
-  create_binding(schema, "radio", "BindRadioSelect")
-  
-}
+ 
 
-create_select_binding <- function(schema) {
   
-  create_binding(schema, "select", "BindRadioSelect")
-  
-}
 
-create_checkbox_binding <- function(schema) {
-  
-  create_binding(schema, "checkbox", "BindCheckbox")
-  
-}
-
-create_range_binding <- function(schema) {
-  
-  create_binding(schema, "range", "BindRange")
-  
-}
 
 #' @export
 create_binding_functions <- function(schema){
   c(
-    create_radio_binding(schema),
-    create_select_binding(schema),
-    create_checkbox_binding(schema),
-    create_range_binding(schema)
+    create_binding(schema, "radio", "BindRadioSelect"),
+    create_binding(schema, "select", "BindRadioSelect"),
+    create_binding(schema, "checkbox", "BindCheckbox"),
+    create_binding(schema, "range", "BindRange")
   )
 }

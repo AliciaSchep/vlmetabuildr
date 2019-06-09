@@ -2,7 +2,7 @@
 
 # vlmetabuildr
 
-The goal of vlmetabuildr is to provide functions that can be used to build up an api... it is not a package meant to be used to actually build visualizations themselves, just to help build the actual package one would use.
+The goal of vlmetabuildr is to provide functions that can be used to build up an api for vega-lite in R... it is not a package meant to be used to actually build visualizations themselves, just to help build the actual package one would use.
 
 ### Functions
 
@@ -16,17 +16,15 @@ vl_axis_{enc}
 vl_scale_{enc}
 vl_legend_{enc}
 
-vl_add_selections
-
 vl_add_single_selection
 vl_add_multi_selection
 vl_add_interval_selection
 vl_bind_checkbox
-
 vl_bind_radio
 vl_bind_select
 vl_bind_range
 vl_bind_scale
+
 vl_bind_html
 
 vl_condition_{enc}
@@ -38,36 +36,26 @@ vl_resolve_scale
 vl_resolve_axis
 vl_resolve_legend
 
-vl_add_projection
-vl_add_title
-
-vl_and
-vl_or
-vl_not
-
-
-# customize order -- encode: field first, selection type first
-# encode - sugar for type
+vl_add_properties
 
 vl_hconcat
 vl_vconcat
 vl_layer
 vl_repeat
 
-
-layer_{mark} ??
+vl_config
 
 ### Objects
 
 
-vl$SingleSelection
-vl$MultiSelection
-vl$IntervalSelection
-vl$BinParams
-vl$Axis
-vl$Legend
-vl$TimeUnit
-vl$BindCheckbox
-vl$BindRange
-vl$BindScale
-vl$BindRadioSelect
+SingleSelection
+MultiSelection
+IntervalSelection
+BinParams
+Axis
+Legend
+BindCheckbox
+BindRange
+BindScale
+BindRadioSelect
+

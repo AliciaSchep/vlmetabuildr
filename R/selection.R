@@ -1,7 +1,9 @@
 create_selection_functions <- function(schema) {
-  purrr::map_chr(list("SingleSelection","MultiSelection","IntervalSelection"), 
-                 create_selection_type, 
-                 schema = schema)
+  selections <- list("SingleSelection","MultiSelection","IntervalSelection")
+  c(
+    purrr::map_chr(selections, create_selection_type, schema = schema),
+    purrr::map_chr(selections, create_object, schema = schema)
+  )
 }
 
 
@@ -14,7 +16,7 @@ create_selection_type <- function(type, schema) {
   
   param_docs <- paste0(
     "#' @param selection_name Name of selection\n",
-    get_param_docs(sel_props)
+    get_param_docs(schema, glue("#/definitions/{type}"))
   )
   
   short_type <- tolower(stringr::str_remove(type,"Selection"))

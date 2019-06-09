@@ -15,9 +15,11 @@
 #'  )
 #' VL_SCHEMA <- jsonlite::read_json(schema_file)
 #' api <- create_api(VL_SCHEMA)
-create_api <- function(schema){
+create_api <- function(schema) {
   
   c(
+    create_chart(schema),
+    create_properties(schema),
     create_data_generic(schema),
     create_mark_functions(schema),
     create_encoding_functions(schema),
@@ -28,7 +30,8 @@ create_api <- function(schema){
     create_facet_functions(schema),
     create_repeat_functions(schema),
     create_resolve_functions(schema),
-    create_config_functions(schema)
+    create_config_functions(schema),
+    create_additional_objects(schema)
   )
   
 }

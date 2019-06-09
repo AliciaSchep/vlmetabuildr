@@ -4,7 +4,7 @@ create_data_generic <- function(schema) {
   data_args <- paste(names(data_props), "NULL", sep = " = ")
   arg_list <- paste(c('spec', unique(data_args)), collapse = ", ")
 
-  param_docs <- get_param_docs(data_props)
+  param_docs <- get_param_docs(schema, "#/definitions/Data")
 
   create_pass_function(
     function_suffix = "add_data", 

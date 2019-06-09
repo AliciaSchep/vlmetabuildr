@@ -35,43 +35,16 @@ get_description_plus <- function(x) {
 
 }
 
-get_param_docs <- function(properties) {
-
-  d <- purrr::map_chr(properties, get_description)
-  d <- stringr::str_replace_all(d, "\n","\n#' ")
-  t <- purrr::map_chr(properties, type_or_ref)
-
-  docs <- paste(d, glue("(type = {t})"))
-
-  param_names <- unique(names(properties))
-
-  param_desc <- purrr::map_chr(
-    param_names,
-    ~ paste(unique(docs[which(names(properties) == .)]), collapse = " OR ")
-  )
+get_param_docs <- function(schema, ref, only = NULL) {
   
-  param_desc <- stringr::str_replace_all(
-    param_desc,
-    "_\\[([^[\\]_]]*)\\]_",
-    "\\\\\\[\\1\\\\\\]")
-  
-  param_desc <- stringr::str_replace_all(
-    param_desc,
-    "%E2%80%93",
-    "-"
-  )
-
-  paste("#' @param", param_names, param_desc, sep = " ", collapse = "\n")
-
-}
-
-
-
-get_param_docs2 <- function(schema, ref) {
-  
-  properties <- props2(schema, list("$ref" = ref))
+  properties <- unlist(purrr::map(ref, ~props2(schema, list("$ref" = .))), 
+                                  recursive = FALSE)
   
   param_names <- unique(names(unlist(unname(properties), recursive = FALSE)))
+  
+  if (!is.null(only)) {
+    param_names <- intersect(param_names, only)
+  }
   
   get_desc <- function(param) {
     objs <- names(properties[purrr::map_lgl(properties, ~hasName(., param))])
@@ -99,7 +72,7 @@ get_param_docs2 <- function(schema, ref) {
   )
   
   paste("#' @param", param_names, param_desc, sep = " ", collapse = "\n")
-  
+ 
 }
 
 create_pass_function <- function(function_suffix, 

@@ -20,7 +20,7 @@ create_encoder <- function(enc, schema) {
   encode_args <- paste(encode_names, "NULL", sep = " = ")
   arg_list <- paste(c('spec', encode_args), collapse = ", ")
 
-  param_docs <- get_param_docs2(schema, list("$ref" = glue("#/definitions/Encoding/properties/{enc}")))
+  param_docs <- get_param_docs(schema, glue("#/definitions/Encoding/properties/{enc}"))
 
   create_pass_function(
     function_suffix = glue("encode_{enc}"), 
@@ -28,7 +28,7 @@ create_encoder <- function(enc, schema) {
     arg_list = arg_list,
     modify_args = glue("args_out <- c(args_out, list(.enc = '{enc}'))"),
     doc_description = glue("#' Add encoding for {enc} to a vega-lite spec."),
-    extra_docs = glue("#' @seealso [vl_encode()], [vl_{capitalize(enc)}()]"),
+    extra_docs = glue("#' @seealso [vl_encode()], [vl_make_{capitalize(enc)}()]"),
     param_docs = param_docs)   
   
 }
@@ -41,7 +41,7 @@ create_encode_object <- function(enc, schema) {
   encode_args <- paste(names(encode_props), "NULL", sep = " = ")
   arg_list <- paste(unique(encode_args), collapse = ", ")
 
-  param_docs <- get_param_docs2(schema, list("$ref" = glue("#/definitions/Encoding/properties/{enc}")))
+  param_docs <- get_param_docs(schema, glue("#/definitions/Encoding/properties/{enc}"))
   Enc <- capitalize(enc)
   
   template <- system.file("templates/template_object.R", package = 'vlmetabuildr')

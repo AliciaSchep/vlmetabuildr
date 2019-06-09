@@ -4,7 +4,7 @@ get_mark_props <- function(schema){
 }
 
 get_mark_docs <- function(schema) {
-  get_param_docs2(schema, "#/definitions/AnyMark")
+  get_param_docs(schema, "#/definitions/AnyMark")
 }
 
 get_mark_props_comp <- function(schema, comp){
@@ -54,6 +54,7 @@ create_mark <- function(mark, schema) {
 
   glue("\n#' @name vl_mark\n",
        "#' @export\n",
+       #"#' @alias vl_mark_{mark}\n",
        "vl_mark_{mark} <- function({arg_list}) {{\n",
        "  args_in <- rlang::fn_fmls_syms()\n",
        "  args_eval <- lapply(args_in,eval, env = rlang::current_env())\n",
@@ -71,6 +72,7 @@ create_mark_composite <- function(mark, schema) {
   
   glue("\n#' @name vl_mark\n",
        "#' @export\n",
+       #"#' @alias vl_mark_{mark}\n",
        "vl_mark_{mark} <- function({arg_list}) {{\n",
        "  args_in <- rlang::fn_fmls_syms()\n",
        "  args_eval <- lapply(args_in,eval, env = rlang::current_env())\n",
