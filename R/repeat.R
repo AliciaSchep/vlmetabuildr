@@ -1,12 +1,10 @@
 create_repeat <- function(type, schema) {
   
-  
-  arg_list <- "spec, ..., columns = 2"
-  
   param_docs <- "#' @param ... fields to use for repeat (strings)"
     
   
   if (type == "wrap") {
+    arg_list <- "spec, ..., columns = 2"
     param_docs <- paste(
       param_docs,
       "#' @param columns number of columns to use",
@@ -14,6 +12,7 @@ create_repeat <- function(type, schema) {
     )
     arg_mod <- glue("args_out <- c(list(spec = spec, .type = '{type}'),list(...), columns = columns)")
   } else {
+    arg_list <- "spec, ..."
     arg_mod <- glue("args_out <- c(list(spec = spec, .type = '{type}'),list(...))")
   }
   

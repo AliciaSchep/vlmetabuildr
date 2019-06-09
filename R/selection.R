@@ -16,7 +16,7 @@ create_selection_type <- function(type, schema) {
   
   param_docs <- paste0(
     "#' @param selection_name Name of selection\n",
-    get_param_docs(schema, glue("#/definitions/{type}"))
+    get_param_docs(schema, glue("#/definitions/{type}"), names(sel_props))
   )
   
   short_type <- tolower(stringr::str_remove(type,"Selection"))

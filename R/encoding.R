@@ -16,7 +16,8 @@ create_encoder <- function(enc, schema) {
 
   # Get all props...
   encode_props <- props(schema, list("$ref" = glue("#/definitions/Encoding/properties/{enc}")))
-  encode_names <- unique(c("field", "type", names(encode_props)))
+  encode_names <- unique(c(intersect(c("field", "type"),names(encode_props)), 
+                           names(encode_props)))
   encode_args <- paste(encode_names, "NULL", sep = " = ")
   arg_list <- paste(c('spec', encode_args), collapse = ", ")
 

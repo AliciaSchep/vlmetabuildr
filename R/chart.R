@@ -37,12 +37,12 @@ create_properties <- function(schema) {
   
   create_pass_function(
     function_suffix = glue("add_properties"), 
-    recipient_function = ".add_property",
+    recipient_function = ".add_properties",
     arg_list = arg_list,
     doc_description = glue("#' Add properties to top level of a vega-lite spec. Allows adding", 
                            "\n#' properties like width, height, background which don't have a",
                            "\n#' a specific function for adding them (unlike `mark` or `encoding`)."),
-    extra_docs = glue("#' @seealso [vl_chart()], [vl_config()]"),
+    extra_docs = glue("#' @seealso [vl_chart()], [vl_add_config()]"),
     param_docs = param_docs)   
   
 }

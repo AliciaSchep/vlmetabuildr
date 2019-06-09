@@ -5,10 +5,10 @@ capitalize <- function(x){
 }
 
 type_or_ref <- function(x){
-  if (hasName(x,"$ref")){
+  if (hasName(x,"$ref")) {
     sp <- strsplit(x[["$ref"]],"/")[[1]]
     sp[length(sp)]
-  } else if (hasName(x,"type")){
+  } else if (hasName(x,"type")) {
     paste(x[["type"]],collapse = " OR ")
   } else {
     "Varies"
@@ -29,8 +29,6 @@ get_description_plus <- function(x) {
 
   d <- get_description(x)
   d <- stringr::str_replace_all(d, "\n","\n#' ")
-  #t <- type_or_ref(x)
-  #glue("{d} (type = {t})")
   d
 
 }
@@ -53,23 +51,36 @@ get_param_docs <- function(schema, ref, only = NULL) {
     grp_descs <- purrr::map_chr(names(grps), 
                    ~glue('(_{paste(grps[[.]], collapse = ", ")}_) {.}'))
     if (length(grp_descs) > 1) {
-      return(paste(grp_descs, collapse = "#' "))
+      return(paste(grp_descs, collapse = "\n#' \n#' "))
     }
     grp_descs
   }
   
   param_desc <- purrr::map_chr(param_names, get_desc)
   
-  param_desc <- stringr::str_replace_all(
-    param_desc,
-    "_\\[([^[\\]_]]*)\\]_",
-    "\\\\\\[\\1\\\\\\]")
+  #param_desc <- stringr::str_replace_all(
+  #  param_desc,
+  #  "_\\[([^[\\]_]]*)\\]_",
+  #  "\\\\\\[\\1\\\\\\]")
   
+  # Some links have the '-' replaced with '%E2%80%93' -- replace 
   param_desc <- stringr::str_replace_all(
     param_desc,
     "%E2%80%93",
     "-"
   )
+  
+  # Escape [ ] used when not in a link
+  param_desc <- stringr::str_replace_all(
+    param_desc,
+    "(?<!`)\\[([^[\\]_]]*)\\](?![\\(`])",
+    "\\\\\\[\\1\\\\\\]")
+  
+  # Very specific fix for an issue...
+  param_desc <- stringr::str_replace_all(
+    param_desc,
+   "`'Count of Records`",
+   "`Count of Records`")
   
   paste("#' @param", param_names, param_desc, sep = " ", collapse = "\n")
  
@@ -78,13 +89,20 @@ get_param_docs <- function(schema, ref, only = NULL) {
 create_pass_function <- function(function_suffix, 
                                  recipient_function,
                                  arg_list,
-                                 modify_args = "",
-                                 doc_description = "",
-                                 extra_docs = "",
-                                 param_docs = "" ) {
+                                 modify_args = "#'",
+                                 doc_description = "#'",
+                                 extra_docs = "#'",
+                                 param_docs = "#'",
+                                 group = NULL) {
 
-  template <- system.file(file.path("templates","template_pass.R"), 
+  if (!is.null(group)) {
+    template <- system.file(file.path("templates","template_pass_group.R"), 
+                            package = 'vlmetabuildr')
+  } else {
+    template <- system.file(file.path("templates","template_pass.R"), 
                           package = 'vlmetabuildr')
+  }
+  
   glargs <- list(
     function_suffix = function_suffix,
     recipient_function = recipient_function,
@@ -94,21 +112,30 @@ create_pass_function <- function(function_suffix,
     extra_docs = extra_docs,
     param_docs = param_docs
   )
+  
+  glargs['doc_name'] <- group
   
   glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
   
 }
 
+
 create_custom_pass_function <- function(function_suffix, 
                                  recipient_function,
                                  arg_list,
                                  modify_args,
-                                 doc_description = "",
-                                 extra_docs = "",
-                                 param_docs = "" ) {
+                                 doc_description = "#'",
+                                 extra_docs = "#'",
+                                 param_docs = "#'",
+                                 group = NULL) {
   
-  template <- system.file(file.path("templates","template_pass_custom.R"), 
+  if (!is.null(group)) {
+    template <- system.file(file.path("templates","template_pass_group_custom.R"), 
+                            package = 'vlmetabuildr')
+  } else {
+    template <- system.file(file.path("templates","template_pass_custom.R"), 
                           package = 'vlmetabuildr')
+  }
   glargs <- list(
     function_suffix = function_suffix,
     recipient_function = recipient_function,
@@ -118,6 +145,7 @@ create_custom_pass_function <- function(function_suffix,
     extra_docs = extra_docs,
     param_docs = param_docs
   )
+  glargs['doc_name'] <- group
   
   glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
   
@@ -126,19 +154,35 @@ create_custom_pass_function <- function(function_suffix,
 create_function_for_encode_param <- function(
   enc,
   param,
-  arg_list,
-  param_docs ) {
+  arg_list) {
 
   create_pass_function(
     function_suffix = glue("{param}_{enc}"), 
     recipient_function = glue(".add_{param}_to_encoding"),
     arg_list = arg_list,
     modify_args = glue("args_out <- c(args_out, list(.enc = '{enc}'))"),
-    doc_description = glue("#' Add {param} to encoding for {enc} in a vega-lite spec."),
-    extra_docs = glue("#' @seealso [vl_{enc}()]"),
-    param_docs = param_docs
+    extra_docs = glue("#' @seealso [vl_encode_{enc}()]"),
+    group = glue("{param}_encoding")
   )
 
 }
 
-
+create_group_docs <- function(doc_name, 
+                              doc_title,
+                              doc_description = "#'",
+                              extra_docs = "#'",
+                              param_docs = "#'" ) {
+  
+  template <- system.file(file.path("templates","template_doc_group.R"), 
+                          package = 'vlmetabuildr')
+  glargs <- list(
+    doc_name = doc_name,
+    doc_title = doc_title,
+    doc_description = doc_description,
+    extra_docs = extra_docs,
+    param_docs = param_docs
+  )
+  
+  glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
+  
+}
