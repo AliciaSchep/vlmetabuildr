@@ -2,60 +2,18 @@
 
 # vlmetabuildr
 
-The goal of vlmetabuildr is to provide functions that can be used to build up an api for vega-lite in R... it is not a package meant to be used to actually build visualizations themselves, just to help build the actual package one would use.
+The goal of vlmetabuildr is to provide functions that can be used to build up an api for vega-lite in R... it is not a package meant to be used to actually build visualizations themselves, just to help build the actual package one would use: [vlbuildr](https://github.com/AliciaSchep/vlbuildr)
 
-### Functions
+The main function is `create_api` which takes in a Vega-Lite schema and creates an API. Note that this function is likely not robust to versions of the schema substantiallly different from the one currently being used...
 
-vl_bin_{enc}
-vl_stack_{enc}
-vl_sort_{enc}
-vl_impute_{enc}
-vl_aggregate_{enc}
+```r
+library("vlmetabuildr")
 
-vl_axis_{enc}
-vl_scale_{enc}
-vl_legend_{enc}
+schema_file <- Sys.glob(file.path(system.file("schema/vega-lite", package = "vegawidget"),"*.json"))
+VL_SCHEMA <- jsonlite::read_json(schema_file)
 
-vl_add_single_selection
-vl_add_multi_selection
-vl_add_interval_selection
-vl_bind_checkbox
-vl_bind_radio
-vl_bind_select
-vl_bind_range
-vl_bind_scale
+r_api <- create_api(VL_SCHEMA)
 
-vl_bind_html
-
-vl_condition_{enc}
-
-vl_facet_row
-vl_facet_col
-vl_facet_wrap
-vl_resolve_scale
-vl_resolve_axis
-vl_resolve_legend
-
-vl_add_properties
-
-vl_hconcat
-vl_vconcat
-vl_layer
-vl_repeat
-
-vl_config
-
-### Objects
-
-
-SingleSelection
-MultiSelection
-IntervalSelection
-BinParams
-Axis
-Legend
-BindCheckbox
-BindRange
-BindScale
-BindRadioSelect
-
+r_file_path <- file.path(rprojroot::find_package_root_file(), "R","zzz_autogen_api.R")
+cat(r_api, file = r_file_path)
+```
