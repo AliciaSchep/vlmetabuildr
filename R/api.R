@@ -19,19 +19,19 @@ create_api <- function(schema) {
   
   c(
     create_chart(schema),
-    create_properties(schema),
+    #create_properties(schema),
     create_data_generic(schema),
     create_mark_functions(schema),
-    create_encoding_functions(schema),
-    create_transform_functions(schema),
-    create_encoding_param_functions(schema),
-    create_selection_functions(schema),
-    create_binding_functions(schema),
-    create_facet_functions(schema),
-    create_repeat_functions(schema),
-    create_resolve_functions(schema),
-    create_config_functions(schema),
-    create_additional_objects(schema)
+    create_encoding_functions(schema)#,
+    # create_transform_functions(schema),
+    # create_encoding_param_functions(schema),
+    # create_selection_functions(schema),
+    # create_binding_functions(schema),
+    # create_facet_functions(schema),
+    # create_repeat_functions(schema),
+    # create_resolve_functions(schema),
+    # create_config_functions(schema),
+    # create_additional_objects(schema)
   )
   
 }
