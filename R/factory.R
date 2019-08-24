@@ -64,29 +64,42 @@ make_arg_list <- function(reference, schema, exclude_args, priority_args){
   arg_list
 }
 
-make_docs <- function(reference, schema, suffix,  exclude_args,  description = "") {
+make_docs_helper <- function(title, description, param_docs,
+                             returns = "A modified Vega-Lite Spec", export = TRUE, doc_group = NULL) {
   
-  title <- glue("\n#' vl_{suffix}\n#'")
+  title <- roxy_wrap(title)
   
   desc <- roxy_wrap(description)
   
-  spec_doc <- glue("#' @param spec An input vega-lite spec")
+  returns <- glue("#' @return {returns}")
+  export <- if (export) "#' @export" else NULL
   
-  param_docs <- get_param_docs(schema, reference, exclude = exclude_args)
-
-  returns <- "#' @return A modified Vega-Lite Spec"
-  export <- "#' @export"
+  doc_name <- if (!is.null(doc_group)) glue("#' @name {doc_group}") else NULL
   
   paste(
+    "",
     title,
+    "#' ",
     desc,
-    spec_doc,
     param_docs,
     returns,
     export,
+    doc_name,
     sep = "\n"
   )
   
+}
+
+make_docs <- function(reference, schema, suffix,  exclude_args,  description = "") {
+  
+  spec_doc <- glue("#' @param spec An input vega-lite spec")
+  param_docs <- get_param_docs(schema, reference, exclude = exclude_args)
+  
+  make_docs_helper(
+    glue("vl_{suffix}"),
+    description,
+    paste(spec_doc, param_docs, sep = "\n"),
+  )
 }
 
 make_docs_for_group <- function(doc_group){
@@ -96,31 +109,15 @@ make_docs_for_group <- function(doc_group){
 
 make_group_doc <- function(reference, schema, doc_group, title, description, exclude_args = NULL) {
   
-  
-  title <- roxy_wrap(title)
-  desc <- roxy_wrap(description)
-  
   spec_doc <- glue("#' @param spec An input vega-lite spec")
-  
   param_docs <- get_param_docs(schema, reference, exclude = exclude_args)
   
-  returns <- "#' @return A modified Vega-Lite Spec"
-  export <- "#' @export"
-  doc_name <- glue("#' @name {doc_group}")
-  
-  paste(
-    "",
+  make_docs_helper(
     title,
-    "#' ",
-    desc,
-    spec_doc,
-    param_docs,
-    returns,
-    export,
-    doc_name,
-    "",
-    sep = "\n"
-  )  
+    description,
+    paste(spec_doc, param_docs, sep = "\n"),
+    doc_group = doc_group
+  )
   
 }
 
@@ -169,55 +166,29 @@ opts_to_list <- function(options, na_option){
 }
 
 make_option_docs<- function(option_name, options, suffix, description, na_option) {
-  title <- glue("\n#' vl_{suffix}\n#'")
-  
-  desc <- roxy_wrap(description)
   
   spec_doc <- glue("#' @param spec An input vega-lite spec")
-  
   param_docs <- glue("#' @param {option_name} One of {opts_to_list(options, na_option)}")
   
-  returns <- "#' @return A modified Vega-Lite Spec"
-  export <- "#' @export"
-  
-  paste(
-    title,
-    desc,
-    spec_doc,
-    param_docs,
-    returns,
-    export,
-    sep = "\n"
+  make_docs_helper(
+    glue("vl_{suffix}"),
+    description,
+    paste(spec_doc, param_docs, sep = "\n")
   )
+
 }
 
 make_option_group_doc <- function(doc_group, option_name, options, title, description, na_option) {
   
-  
-  title <- roxy_wrap(title)
-  desc <- roxy_wrap(description)
-  
   spec_doc <- glue("#' @param spec An input vega-lite spec")
-  
   param_docs <- glue("#' @param {option_name} One of {opts_to_list(options, na_option)}")
   
-  returns <- "#' @return A modified Vega-Lite Spec"
-  export <- "#' @export"
-  doc_name <- glue("#' @name {doc_group}")
-  
-  paste(
-    "",
+  make_docs_helper(
     title,
-    "#' ",
-    desc,
-    spec_doc,
-    param_docs,
-    returns,
-    export,
-    doc_name,
-    "",
-    sep = "\n"
-  )  
+    description,
+    paste(spec_doc, param_docs, sep = "\n"),
+    doc_group = doc_group
+  )
   
 }
 
