@@ -1,3 +1,14 @@
+make_function_helper <- function(suffix, docs, inner_function, args) {
+  
+  ## Make the outer function
+  fn <- glue("vl_{suffix} <- function({args}){{\n{inner_function}\n}}")
+  
+  # Combine docs and function
+  glue_collapse(c(docs, fn), sep = "\n", last = "\n")
+  
+}
+
+
 make_function <- function(
   reference,
   schema,
@@ -24,11 +35,9 @@ make_function <- function(
   ## Get args
   args <- make_arg_list(reference, schema, override_args, priority_args)
   
-  ## Make the outer function
-  fn <- glue("vl_{suffix} <- function({args}){{\n{inner_fn}\n}}")
+  ## Assemble
+  make_function_helper(suffix, docs, inner_fn, args)
   
-  # Combine docs and function
-  glue_collapse(c(docs, fn), sep = "\n", last = "\n")
 }
 
 make_function_innards <- function(reference, schema, override_args, adder_function, pass_to_adder) {
@@ -56,6 +65,9 @@ make_function_innards <- function(reference, schema, override_args, adder_functi
 make_arg_list <- function(reference, schema, exclude_args, priority_args){
   
   param_names <- get_params(schema, reference, exclude_args)
+  
+  # If param is named repeat, need to change
+  param_names[param_names == "repeat"] <- "`repeat`"
   
   param_names <- unique(c(intersect(priority_args,param_names), param_names))
   args <- paste(param_names, "NULL", sep = " = ")
@@ -98,7 +110,7 @@ make_docs <- function(reference, schema, suffix,  exclude_args,  description = "
   make_docs_helper(
     glue("vl_{suffix}"),
     description,
-    paste(spec_doc, param_docs, sep = "\n"),
+    paste(spec_doc, param_docs, sep = "\n")
   )
 }
 
@@ -150,11 +162,8 @@ make_option_function <- function(
   ## Get args
   args <- make_option_arg_list(option_name, options, na_option)
   
-  ## Make the outer function
-  fn <- glue("vl_{suffix} <- function({args}){{\n{inner_fn}\n}}")
-  
-  # Combine docs and function
-  glue_collapse(c(docs, fn), sep = "\n", last = "\n")
+  ## Assemble
+  make_function_helper(suffix, docs, inner_fn, args)
 }
 
 opts_to_list <- function(options, na_option){

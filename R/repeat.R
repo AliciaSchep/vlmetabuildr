@@ -1,32 +1,34 @@
 create_repeat <- function(type, schema) {
   
-  param_docs <- "#' @param ... fields to use for repeat (strings)"
-    
+  reference <- "#/definitions/RepeatSpec/properties/repeat"
+  suffix <- glue("repeat_{type}")
   
-  if (type == "wrap") {
-    arg_list <- "spec, ..., columns = 2"
-    param_docs <- paste(
-      param_docs,
-      "#' @param columns number of columns to use",
-      sep = "\n"
-    )
-    arg_mod <- glue("args_out <- c(list(spec = spec, .type = '{type}'),list(...), columns = columns)")
+  spec_doc <- glue("#' @param spec An input vega-lite spec")
+  extra_doc <- if (type == "wrap") "#' @param columns number of columns to add" else NULL
+  param_docs <- "#' @param ... fields to use for repeat (strings)"
+  
+  docs <- make_docs_helper(
+    glue("vl_{suffix}"),
+    glue::glue("Add repeat to a vega-lite spec."),
+    paste(spec_doc,extra_doc, param_docs, sep = "\n")
+  )
+  
+  ## Make the inner function
+
+  inner_fn <- if (type == "wrap") {
+    glue("  .add_repeat(spec, list(...), '{reference}', columns = columns, .type = {type})")
   } else {
-    arg_list <- "spec, ..."
-    arg_mod <- glue("args_out <- c(list(spec = spec, .type = '{type}'),list(...))")
+    glue("  .add_repeat(spec, list(...), '{reference}', .type = {type})")
   }
   
-  opts <- c("col","row","wrap")
-  see_also <- paste(glue("[vl_repeat_{opts[opts != type]}()]"), collapse = ", ")
+  ## Get args
+  arg_list <-if (type == "wrap")  "spec, columns = 2, ..." else "spec, ..."
   
-  create_custom_pass_function(
-    function_suffix = glue("repeat_{type}"), 
-    recipient_function = ".add_repeat",
-    arg_list = arg_list,
-    modify_args = arg_mod,
-    doc_description = glue("#' Add repeating by {type} to a vega-lite spec."),
-    extra_docs = glue("#' @seealso {see_also}"),
-    param_docs = param_docs)   
+  ## Make the outer function
+  fn <- glue("vl_{suffix} <- function({arg_list}){{\n{inner_fn}\n}}")
+  
+  # Combine docs and function
+  glue_collapse(c(docs, fn), sep = "\n", last = "\n")
   
 }
 
