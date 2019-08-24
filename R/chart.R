@@ -28,21 +28,26 @@ create_properties <- function(schema) {
   alt <- c("layer","repeat","concat","hconcat","vconcat","facet","mark",
            "transform","selection","resolve","data","config","$schema","spec",
            "encoding")
-  chart_props <- props(schema, list("$ref" = "#/definitions/TopLevelSpec"))
-  chart_names <- setdiff(unique(names(chart_props)), alt)
-  chart_args <- paste(chart_names, "NULL", sep = " = ")
-  arg_list <- paste(c('spec', chart_args), collapse = ", ")
+ 
+  suffix <- "add_properties"
+  reference <- "#/definitions/TopLevelSpec"
+  description <- paste0("Add properties to top level of a vega-lite spec. Allows adding properties like width,", 
+                       "height, background which don't have a specific function for adding them (unlike `mark`",
+                       "or `encoding`).")
   
-  param_docs <- get_param_docs(schema, "#/definitions/TopLevelSpec", only = chart_names)
+  docs <- make_docs(reference, schema, suffix,  exclude_args = alt, 
+                      description = description)
   
-  create_pass_function(
-    function_suffix = glue("add_properties"), 
-    recipient_function = ".add_properties",
-    arg_list = arg_list,
-    doc_description = glue("#' Add properties to top level of a vega-lite spec. Allows adding", 
-                           "\n#' properties like width, height, background which don't have a",
-                           "\n#' a specific function for adding them (unlike `mark` or `encoding`)."),
-    extra_docs = glue("#' @seealso [vl_chart()], [vl_add_config()]"),
-    param_docs = param_docs)   
+  ## Make the inner function
+  inner_fn <- make_function_innards(reference, schema, override_args = NULL, 
+                                    adder_function = ".add_properties", pass_to_adder = NULL)
   
+  ## Get args
+  args <- make_arg_list(reference, schema, alt, NULL)
+  
+  ## Make the outer function
+  fn <- glue::glue("vl_{suffix} <- function({args}){{\n{inner_fn}\n}}")
+  
+  # Combine docs and function
+  glue::glue_collapse(c(docs, fn), sep = "\n", last = "\n")
 }

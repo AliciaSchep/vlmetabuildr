@@ -170,21 +170,21 @@ create_custom_pass_function <- function(function_suffix,
   
 }
 
-create_function_for_encode_param <- function(
-  enc,
-  param,
-  arg_list) {
-
-  create_pass_function(
-    function_suffix = glue("{param}_{enc}"), 
-    recipient_function = glue(".add_{param}_to_encoding"),
-    arg_list = arg_list,
-    modify_args = glue("args_out <- c(args_out, list(.enc = '{enc}'))"),
-    extra_docs = glue("#' @seealso [vl_encode_{enc}()]"),
-    group = glue("{param}_encoding")
-  )
-
-}
+# create_function_for_encode_param <- function(
+#   enc,
+#   param,
+#   arg_list) {
+# 
+#   create_pass_function(
+#     function_suffix = glue("{param}_{enc}"), 
+#     recipient_function = glue(".add_{param}_to_encoding"),
+#     arg_list = arg_list,
+#     modify_args = glue("args_out <- c(args_out, list(.enc = '{enc}'))"),
+#     extra_docs = glue("#' @seealso [vl_encode_{enc}()]"),
+#     group = glue("{param}_encoding")
+#   )
+# 
+# }
 
 create_group_docs <- function(doc_name, 
                               doc_title,
