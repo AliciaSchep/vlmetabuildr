@@ -18,8 +18,8 @@ create_binding <- function(schema, name, ref) {
   )
   
   ## Make the inner function
-  param_names <- get_params(schema, reference, exclude = "input")
-  modifier <- glue("  args <- .modify_args(NULL, {deparse_c(param_names)})")
+  param_names <- get_params(schema, reference)
+  modifier <- glue("  args <- .modify_args(list(input = '{name}'), {deparse_c(param_names)})")
   
   adder <- glue(".add_binding(args$spec, args$object, '{reference}', selection_name = args$extra$selection_name,
                 projection_name = args$extra$projection_name)")
@@ -31,7 +31,7 @@ create_binding <- function(schema, name, ref) {
   )
   
   ## Get args
-  args <- paste(c('projection_name', param_names), "NULL", sep = " = ")
+  args <- paste(c('projection_name', get_params(schema, reference, exclude = "input")), "NULL", sep = " = ")
   arg_list <- paste(c('spec', 'selection_name', args), collapse = ", ")
   
   ## Make the outer function

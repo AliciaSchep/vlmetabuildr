@@ -10,7 +10,8 @@ create_encoding_param_functions <- function(schema) {
     create_aggregate_encoding_functions(schema),
     create_sort_encoding_functions(schema),
     create_sort_by_field_functions(schema),
-    create_sort_by_encoding_functions(schema)
+    create_sort_by_encoding_functions(schema),
+    create_remove_axis_functions(schema)
   )
 }
 
@@ -55,6 +56,29 @@ create_function_group_for_encode_param <- function(reference, param, schema) {
                    create_function_for_encode_param, 
                    schema = schema, param = param, reference = reference)
   )
+  
+}
+
+create_remove_axis_function <- function(enc, schema) {
+  
+  docs <- "\n#' @name axis_encoding\n#' @export"
+  
+  ## Make the inner function
+  
+  inner_fn <- glue("  .add_axis_to_encoding(spec, NA, '#/definitions/Axis', encoding = '{enc}') ")
+  
+  
+  ## Make the outer function
+  make_function_helper(glue("remove_axis_{enc}"), docs, inner_fn, "spec")
+  
+}
+
+create_remove_axis_functions <- function(schema) {
+  ax_options <- get_enc_with_prop(schema,"axis")
+  
+  purrr::map_chr(ax_options, 
+                 create_remove_axis_function, 
+                 schema = schema)
   
 }
 
@@ -204,7 +228,7 @@ create_sort_encoding_functions <- function(schema) {
     docs <- make_docs_for_group(doc_group)
   
     ## Make the inner function
-    inner_fn <- glue("  .add_sort_to_encoding(spec, value, '#/definitions/Sort', encoding = {enc})")
+    inner_fn <- glue("  .add_sort_to_encoding(spec, value, '#/definitions/Sort', encoding = '{enc}')")
     
     ## Get args
     args <- "spec, value"

@@ -16,19 +16,16 @@ create_repeat <- function(type, schema) {
   ## Make the inner function
 
   inner_fn <- if (type == "wrap") {
-    glue("  .add_repeat(spec, list(...), '{reference}', columns = columns, .type = {type})")
+    glue("  .add_repeat(spec, list(...), '{reference}', columns = columns, .type = '{type}')")
   } else {
-    glue("  .add_repeat(spec, list(...), '{reference}', .type = {type})")
+    glue("  .add_repeat(spec, list(...), '{reference}', .type = '{type}')")
   }
   
   ## Get args
   arg_list <-if (type == "wrap")  "spec, columns = 2, ..." else "spec, ..."
   
   ## Make the outer function
-  fn <- glue("vl_{suffix} <- function({arg_list}){{\n{inner_fn}\n}}")
-  
-  # Combine docs and function
-  glue_collapse(c(docs, fn), sep = "\n", last = "\n")
+  make_function_helper(suffix, docs, inner_fn, arg_list)
   
 }
 

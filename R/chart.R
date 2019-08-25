@@ -1,8 +1,14 @@
 create_chart <- function(schema) {
+ 
+  reference <- "#/definitions/TopLevelSpec"
+  suffix <- "chart"
   
-  # Get all props...
-  chart_props <- props(schema, list("$ref" = "#/definitions/TopLevelSpec"))
-  chart_names <- unique(c("data", names(chart_props)))
+  param_docs <- get_param_docs(schema, "#/definitions/TopLevelSpec")
+  
+  docs <- paste(param_docs, "#' @name vl_chart", sep = "\n")
+  
+  param_names <- get_params(schema, reference)
+  chart_names <- unique(c("data", param_names))
   chart_names <- stringr::str_replace(chart_names, "^repeat$","`repeat`")
   defaults <- rep("NULL", length(chart_names))
   defaults[which(chart_names == "$schema")] = "vegawidget::vega_schema()"
@@ -10,17 +16,11 @@ create_chart <- function(schema) {
   chart_args <- paste(chart_names,defaults, sep = " = ")
   arg_list <- paste(chart_args, collapse = ", ")
   
-  param_docs <- get_param_docs(schema, "#/definitions/TopLevelSpec")
+  inner_fn <- glue("  args <- .modify_args(NULL, {deparse_c(param_names)})\n  as_vegaspec(args$obj)")
   
-  template <- system.file(file.path("templates","template_chart.R"), 
-                          package = 'vlmetabuildr')
-  glargs <- list(
-    arg_list = arg_list,
-    param_docs = param_docs
-  )
-  
-  glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
-  
+  ## Make the outer function
+  make_function_helper(suffix, docs, inner_fn, arg_list)
+   
 }
 
 
