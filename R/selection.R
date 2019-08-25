@@ -39,11 +39,7 @@ create_selection_type <- function(type, schema) {
   args <- paste(param_names, "NULL", sep = " = ")
   arg_list <- paste(c('spec', 'selection_name', args), collapse = ", ")
   
-  ## Make the outer function
-  fn <- glue("vl_{suffix} <- function({arg_list}){{\n{inner_fn}\n}}")
-  
-  # Combine docs and function
-  glue_collapse(c(docs, fn), sep = "\n", last = "\n")
+  make_function_helper(suffix, docs, inner_fn, arg_list)
   
 }
 

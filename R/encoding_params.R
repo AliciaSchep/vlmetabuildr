@@ -205,22 +205,7 @@ create_sort_encoding_functions <- function(schema) {
   spec_doc <- glue("#' @param spec An input vega-lite spec")
   param_docs <- glue("#' @param value One of 'ascending', 'descending', a list with a custom ordering, or NA to specify no sorting")
   
-  returns <- "#' @return A modified Vega-Lite Spec"
-  export <- "#' @export"
-  doc_name <- glue("#' @name {doc_group}")
-  
-  group_docs <- paste(
-    "",
-    title,
-    "#' ",
-    desc,
-    spec_doc,
-    param_docs,
-    returns,
-    export,
-    doc_name,
-    sep = "\n"
-  )  
+  group_docs <- make_docs_helper(title, desc, paste(spec_doc,param_docs, sep = "\n"), doc_group = doc_group)
     
   
   maker_func <- function(enc) {
@@ -233,11 +218,7 @@ create_sort_encoding_functions <- function(schema) {
     ## Get args
     args <- "spec, value"
     
-    ## Make the outer function
-    fn <- glue("vl_sort_{enc} <- function({args}){{\n{inner_fn}\n}}")
-    
-    # Combine docs and function
-    glue_collapse(c(docs, fn), sep = "\n", last = "\n")
+    make_function_helper( glue("sort_{enc}"), docs, inner_fn, args)
     
   }
   

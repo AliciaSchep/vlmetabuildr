@@ -6,7 +6,8 @@ create_object <- function(obj, schema, reference = glue("#/definitions/{obj}")) 
   docs <- make_docs_helper(
     glue("vl_make_{obj}"),
     "Create spec for {obj}",
-    get_param_docs(schema, reference)
+    get_param_docs(schema, reference),
+    returns = glue("A component of a Vega-Lite spec, corresponding to a {obj}.")
   )
   
   param_names <- get_params(schema, reference)
