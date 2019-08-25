@@ -65,7 +65,7 @@ create_remove_axis_function <- function(enc, schema) {
   
   ## Make the inner function
   
-  inner_fn <- glue("  .add_axis_to_encoding(spec, NA, '#/definitions/Axis', encoding = '{enc}') ")
+  inner_fn <- glue("  .add_axis_to_encoding(spec, NA, '#/definitions/PositionFieldDef/properties/axis', encoding = '{enc}') ")
   
   
   ## Make the outer function
