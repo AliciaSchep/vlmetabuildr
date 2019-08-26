@@ -33,7 +33,7 @@ make_function <- function(
   inner_fn <- make_function_innards(reference, schema, override_args, adder_function, pass_to_adder)
   
   ## Get args
-  args <- make_arg_list(reference, schema, override_args, priority_args)
+  args <- make_arg_list(reference, schema, names(override_args), priority_args)
   
   ## Assemble
   make_function_helper(suffix, docs, inner_fn, args)
