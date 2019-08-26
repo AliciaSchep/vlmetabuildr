@@ -4,7 +4,7 @@ create_resolve <- function(enc, type, schema) {
     "#/definitions/ResolveMode",
     "how",
     unlist(enums(schema, list("$ref" = "#/definitions/ResolveMode"))),
-    glue("resolve_{type}"),
+    glue("resolve_{type}_{enc}"),
     ".add_resolve",
     na_option = FALSE,
     pass_to_adder = list(encoding = enc, type = type),
