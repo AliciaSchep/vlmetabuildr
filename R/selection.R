@@ -9,24 +9,37 @@ create_selection_functions <- function(schema) {
 
 create_selection_type <- function(type, schema) {
   
-  sel_props <- props(schema, list("$ref" = glue("#/definitions/{type}")))
-  sel_props <- sel_props[which(names(sel_props) != "type")]
-  sel_args <- paste(names(sel_props), "NULL", sep = " = ")
-  arg_list <- paste(c('spec', 'selection_name', unique(sel_args)), collapse = ", ")
+  reference <- glue("#/definitions/{type}")
+  short_type <- tolower(stringr::str_remove(type,"Selection"))
+  suffix <- glue::glue("add_{short_type}_selection")
   
-  param_docs <- paste0(
-    "#' @param selection_name Name of selection\n",
-    get_param_docs(schema, glue("#/definitions/{type}"), names(sel_props))
+  spec_doc <- glue("#' @param spec An input vega-lite spec")
+  extra_doc <- "#' @param selection_name Name for selection"
+  param_docs <- get_param_docs(schema, reference)
+  
+  docs <- make_docs_helper(
+    glue("vl_{suffix}"),
+    glue::glue("Add {type} to a vega-lite spec."),
+    paste(spec_doc,extra_doc, param_docs, sep = "\n")
   )
   
-  short_type <- tolower(stringr::str_remove(type,"Selection"))
-  create_pass_function(
-    function_suffix = glue("add_{short_type}_selection"), 
-    recipient_function = ".add_selection",
-    arg_list = arg_list,
-    modify_args = glue("args_out <- c(args_out, list(type = '{short_type}'))"),
-    doc_description = glue("#' Add {type} to a vega-lite spec."),
-    param_docs = param_docs)   
+  ## Make the inner function
+  param_names <- get_params(schema, reference)
+  modifier <- glue("  args <- .modify_args(NULL, {deparse_c(param_names)})")
+  
+  adder <- glue(".add_selection(args$spec, args$object, '{reference}', type = '{short_type}', selection_name = args$extra$selection_name)")
+  
+  inner_fn <- paste(
+    modifier,
+    adder, 
+    sep = "\n  "
+  )
+  
+  ## Get args
+  args <- paste(param_names, "NULL", sep = " = ")
+  arg_list <- paste(c('spec', 'selection_name', args), collapse = ", ")
+  
+  make_function_helper(suffix, docs, inner_fn, arg_list)
   
 }
 

@@ -1,18 +1,25 @@
 
-create_object <- function(obj, schema) {
+create_object <- function(obj, schema, reference = glue("#/definitions/{obj}")) {
   
-  # Get all props...
-  obj_props <- props(schema, list("$ref" = glue("#/definitions/{obj}")))
-  obj_names <- stringr::str_replace(names(obj_props), "^repeat$","`repeat`")
-  obj_args <- paste(obj_names, "NULL", sep = " = ")
-  arg_list <- paste(unique(obj_args), collapse = ", ")
+  suffix <- glue("make_{obj}")
   
-  param_docs <- get_param_docs(schema, glue("#/definitions/{obj}"))
+  docs <- make_docs_helper(
+    glue("vl_make_{obj}"),
+    "Create spec for {obj}",
+    get_param_docs(schema, reference),
+    returns = glue("A component of a Vega-Lite spec, corresponding to a {obj}.")
+  )
   
-  template <- system.file("templates/template_object.R", package = 'vlmetabuildr')
-  glargs <- list(obj = obj, arg_list = arg_list,
-                 param_docs = param_docs)
-  glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
+  param_names <- get_params(schema, reference)
+  
+  # If param is named repeat, need to change
+  param_names[param_names == "repeat"] <- "`repeat`"
+  
+  args <- paste(param_names, "NULL", sep = " = ", collapse = ", ")
+
+  inner_fn <- glue("  args <- .modify_args(NULL, {deparse_c(param_names)})\n  args$obj")
+  
+  make_function_helper(suffix, docs, inner_fn, args)
   
 }
 

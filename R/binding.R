@@ -1,24 +1,40 @@
 
 create_binding <- function(schema, name, ref) {
   
-  bind_props <- props(schema, list("$ref" = glue("#/definitions/{ref}")))
-  bind_props <- bind_props[which(names(bind_props) != "input")]
-  bind_args <- paste(names(bind_props), "NULL", sep = " = ")
-  arg_list <- paste(c('spec', 'selection_name', 'projection_name = NULL', unique(bind_args)), collapse = ", ")
+  reference <- glue("#/definitions/{ref}")
+  suffix <- glue::glue("bind_{name}_input")
   
-  param_docs <- paste0(
-    "#' @param selection_name Name of selection to add binding to\n",
-    "#' @param projection_name Name of projection (field or encoding) within selection\n",
-    get_param_docs(schema, glue("#/definitions/{ref}"), only = names(bind_props))
+  spec_doc <- glue("#' @param spec An input vega-lite spec")
+  extra_doc <- paste(
+    "#' @param selection_name Name of selection to add binding to",
+    "#' @param projection_name Name of projection (field or encoding) within selection",
+    sep = "\n")
+  param_docs <- get_param_docs(schema, reference, exclude = "input")
+  
+  docs <- make_docs_helper(
+    glue("vl_{suffix}"),
+    glue::glue("Add {name} binding to a vega-lite spec."),
+    paste(spec_doc,extra_doc, param_docs, sep = "\n")
   )
   
-  create_pass_function(
-    function_suffix = glue("bind_{name}_input"), 
-    recipient_function = ".add_binding",
-    arg_list = arg_list,
-    modify_args = glue("args_out$input <- '{name}'"),
-    doc_description = glue("#' Add binding to a {name} input to a vega-lite spec."),
-    param_docs = param_docs)  
+  ## Make the inner function
+  param_names <- get_params(schema, reference)
+  modifier <- glue("  args <- .modify_args(list(input = '{name}'), {deparse_c(param_names)})")
+  
+  adder <- glue(".add_binding(args$spec, args$object, '{reference}', selection_name = args$extra$selection_name,
+                projection_name = args$extra$projection_name)")
+  
+  inner_fn <- paste(
+    modifier,
+    adder, 
+    sep = "\n  "
+  )
+  
+  ## Get args
+  args <- paste(c('projection_name', get_params(schema, reference, exclude = "input")), "NULL", sep = " = ")
+  arg_list <- paste(c('spec', 'selection_name', args), collapse = ", ")
+  
+  make_function_helper(suffix, docs, inner_fn, arg_list)
   
 }
 

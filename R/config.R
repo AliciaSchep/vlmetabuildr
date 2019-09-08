@@ -26,39 +26,23 @@ create_sub_config <- function(prop, schema) {
   top_config_props <-  props(schema, list("$ref" = "#/definitions/Config"))
   config <- get_name_from_ref(top_config_props[[prop]])
   
-  config_props <- props(schema, list("$ref" = glue("#/definitions/{config}")))
-  config_args <- paste(names(config_props), "NULL", sep = " = ")
-  arg_list <- paste(c('spec', unique(config_args)), collapse = ", ")
-  
-  param_docs <- get_param_docs(schema, glue("#/definitions/{config}"))
-  
-  create_pass_function(
-    function_suffix = glue("add_{prop}_config"), 
-    recipient_function = ".add_sub_config",
-    arg_list = arg_list,
-    modify_args = glue("args_out <- c(args_out, list(.config = '{prop}'))"),
-    doc_description = glue("#' Add {prop} config ({config}) to a vega-lite spec."),
-    param_docs = param_docs
+  make_function( glue("#/definitions/{config}"), 
+                 schema, 
+                 glue("add_{prop}_config"), 
+                 glue(".add_sub_config"), 
+                 description = glue::glue("Add {prop} config ({config}) to a vega-lite spec."),
+                 pass_to_adder = list(.config = prop)
   )
   
 }
 
 create_config <- function(schema) {
   
-  # Get all props...
-  config_props <- props(schema, list("$ref" = "#/definitions/Config"))
-  config_args <- paste(names(config_props), "NULL", sep = " = ")
-  config_args[config_args == "repeat = NULL"] <- "`repeat` = NULL"
-  arg_list <- paste(c('spec', unique(config_args)), collapse = ", ")
-  
-  param_docs <- get_param_docs(schema, "#/definitions/Config")
-  
-  create_pass_function(
-    function_suffix = "add_config", 
-    recipient_function = ".add_config",
-    arg_list = arg_list,
-    doc_description = glue("#' Add top-level config to a vega-lite spec."),
-    param_docs = param_docs
+  make_function( glue("#/definitions/Config"), 
+                 schema, 
+                 glue("add_config"), 
+                 glue(".add_config"), 
+                 description = glue::glue("Add top-level config to a vega-lite spec.")
   )
   
 }

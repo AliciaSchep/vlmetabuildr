@@ -14,41 +14,21 @@ create_encoding_functions <- function(schema) {
 
 create_encoder <- function(enc, schema) {
 
-  # Get all props...
-  encode_props <- props(schema, list("$ref" = glue("#/definitions/Encoding/properties/{enc}")))
-  encode_names <- unique(c(intersect(c("field", "type"),names(encode_props)), 
-                           names(encode_props)))
-  encode_args <- paste(encode_names, "NULL", sep = " = ")
-  arg_list <- paste(c('spec', encode_args), collapse = ", ")
-
-  param_docs <- get_param_docs(schema, glue("#/definitions/Encoding/properties/{enc}"))
-
-  create_pass_function(
-    function_suffix = glue("encode_{enc}"), 
-    recipient_function = ".add_encoding",
-    arg_list = arg_list,
-    modify_args = glue("args_out <- c(args_out, list(.enc = '{enc}'))"),
-    doc_description = glue("#' Add encoding for {enc} to a vega-lite spec."),
-    extra_docs = glue("#' @seealso [vl_encode()], [vl_make_{capitalize(enc)}()]"),
-    param_docs = param_docs)   
   
+  make_function( glue("#/definitions/Encoding/properties/{enc}"), 
+                 schema, 
+                 glue::glue("encode_{enc}"), 
+                 ".add_encoding", 
+                 priority_args = c("field","type"),
+                 description = glue::glue("Add encoding for {enc} to a vega-lite spec."),
+                 pass_to_adder = list(encoding = enc))
 }
 
 
 create_encode_object <- function(enc, schema) {
 
-  # Get all props...
-  encode_props <- props(schema, list("$ref" = glue("#/definitions/Encoding/properties/{enc}")))
-  encode_args <- paste(names(encode_props), "NULL", sep = " = ")
-  arg_list <- paste(unique(encode_args), collapse = ", ")
-
-  param_docs <- get_param_docs(schema, glue("#/definitions/Encoding/properties/{enc}"))
   Enc <- capitalize(enc)
-  
-  template <- system.file("templates/template_object.R", package = 'vlmetabuildr')
-  glargs <- list(obj = Enc, arg_list = arg_list,
-                 param_docs = param_docs)
-  glue::glue_data(glargs, readr::read_file(template), .trim = FALSE)
+  create_object(Enc, schema, reference = glue("#/definitions/Encoding/properties/{enc}"))
 
 }
 

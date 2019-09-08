@@ -1,3 +1,12 @@
+deparse_c <- function(x){
+  paste(deparse(x, width.cutoff = 75L), collapse = "\n  ")
+}
+
+roxy_wrap <- function(x) {
+  if (x == "") return("#'")
+  paste(strwrap(x, width = 80, prefix = "#' "), collapse = "\n")
+}
+
 capitalize <- function(x){
   first <- substring(x, first = 1L, last = 1L)
   rest <- substring(x, first = 2L, last = nchar(x))
@@ -33,16 +42,26 @@ get_description_plus <- function(x) {
 
 }
 
-get_param_docs <- function(schema, ref, only = NULL) {
-  
+get_params <- function(schema, ref, exclude = NULL) {
   properties <- unlist(purrr::map(ref, ~props2(schema, list("$ref" = .))), 
-                                  recursive = FALSE)
+                       recursive = FALSE)
   
   param_names <- unique(names(unlist(unname(properties), recursive = FALSE)))
   
-  if (!is.null(only)) {
-    param_names <- intersect(param_names, only)
+  if (!is.null(exclude)) {
+    param_names <- setdiff(param_names, exclude)
   }
+  
+  param_names
+  
+}
+
+get_param_docs <- function(schema, ref, exclude = NULL) {
+  
+  properties <- unlist(purrr::map(ref, ~props2(schema, list("$ref" = .))), 
+                       recursive = FALSE)
+  
+  param_names <- get_params(schema, ref, exclude)
   
   get_desc <- function(param) {
     objs <- names(properties[purrr::map_lgl(properties, ~hasName(., param))])
@@ -151,21 +170,21 @@ create_custom_pass_function <- function(function_suffix,
   
 }
 
-create_function_for_encode_param <- function(
-  enc,
-  param,
-  arg_list) {
-
-  create_pass_function(
-    function_suffix = glue("{param}_{enc}"), 
-    recipient_function = glue(".add_{param}_to_encoding"),
-    arg_list = arg_list,
-    modify_args = glue("args_out <- c(args_out, list(.enc = '{enc}'))"),
-    extra_docs = glue("#' @seealso [vl_encode_{enc}()]"),
-    group = glue("{param}_encoding")
-  )
-
-}
+# create_function_for_encode_param <- function(
+#   enc,
+#   param,
+#   arg_list) {
+# 
+#   create_pass_function(
+#     function_suffix = glue("{param}_{enc}"), 
+#     recipient_function = glue(".add_{param}_to_encoding"),
+#     arg_list = arg_list,
+#     modify_args = glue("args_out <- c(args_out, list(.enc = '{enc}'))"),
+#     extra_docs = glue("#' @seealso [vl_encode_{enc}()]"),
+#     group = glue("{param}_encoding")
+#   )
+# 
+# }
 
 create_group_docs <- function(doc_name, 
                               doc_title,
