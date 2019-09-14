@@ -22,7 +22,7 @@ create_repeat <- function(type, schema) {
   }
   
   ## Get args
-  arg_list <-if (type == "wrap")  "spec, columns = 2, ..." else "spec, ..."
+  arg_list <-if (type == "wrap")  "spec, ..., columns = 2" else "spec, ..."
   
   ## Make the outer function
   make_function_helper(suffix, docs, inner_fn, arg_list)
